@@ -65,13 +65,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const data = await post<{ user: User; tokens: AuthTokens }>('/auth/refresh', { refresh_token: refreshToken });
-      localStorage.setItem('access_token', data.tokens.access_token);
-      localStorage.setItem('refresh_token', data.tokens.refresh_token);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, tokens: data.tokens } });
+      const response = await post<{ success: boolean; data: { accessToken: string; refreshToken: string } }>(
+        '/auth/refresh',
+        { refresh_token: refreshToken }
+      );
+      const tokens: AuthTokens = {
+        access_token: response.data.accessToken,
+        refresh_token: response.data.refreshToken,
+      };
+      localStorage.setItem('access_token', tokens.access_token);
+      localStorage.setItem('refresh_token', tokens.refresh_token);
+      const storedUser = localStorage.getItem('user');
+      const user = storedUser ? JSON.parse(storedUser) : null;
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, tokens } });
     } catch {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
       dispatch({ type: 'LOGOUT' });
     }
   };
@@ -83,10 +93,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const data = await post<{ user: User; tokens: AuthTokens }>('/auth/login', { email, password });
-      localStorage.setItem('access_token', data.tokens.access_token);
-      localStorage.setItem('refresh_token', data.tokens.refresh_token);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, tokens: data.tokens } });
+      const response = await post<{
+        success: boolean;
+        data: { user: User; accessToken: string; refreshToken: string };
+      }>('/auth/login', { email, password });
+      const { user, accessToken, refreshToken } = response.data;
+      const tokens: AuthTokens = { access_token: accessToken, refresh_token: refreshToken };
+      localStorage.setItem('access_token', tokens.access_token);
+      localStorage.setItem('refresh_token', tokens.refresh_token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, tokens } });
     } catch (error) {
       const message = getErrorMessage(error, 'Login failed');
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
@@ -97,10 +113,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: Record<string, unknown>) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const result = await post<{ user: User; tokens: AuthTokens }>('/auth/register', data);
-      localStorage.setItem('access_token', result.tokens.access_token);
-      localStorage.setItem('refresh_token', result.tokens.refresh_token);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: result.user, tokens: result.tokens } });
+      const response = await post<{
+        success: boolean;
+        data: { user: User; accessToken: string; refreshToken: string };
+      }>('/auth/register', data);
+      const { user, accessToken, refreshToken } = response.data;
+      const tokens: AuthTokens = { access_token: accessToken, refresh_token: refreshToken };
+      localStorage.setItem('access_token', tokens.access_token);
+      localStorage.setItem('refresh_token', tokens.refresh_token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, tokens } });
     } catch (error) {
       const message = getErrorMessage(error, 'Registration failed');
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
@@ -116,6 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
   };
 

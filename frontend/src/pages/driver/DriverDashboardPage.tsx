@@ -85,132 +85,164 @@ export default function DriverDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Spinner size="lg" />
+      <div className="animate-fade-up flex flex-col gap-4 p-4">
+        <div className="skeleton h-10 w-48 rounded-lg" />
+        <div className="skeleton h-48 w-full rounded-2xl" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton h-24 w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (pageError) {
     return (
-      <ErrorState message={pageError} onRetry={() => window.location.reload()} />
+      <div className="animate-fade-up">
+        <ErrorState message={pageError} onRetry={() => window.location.reload()} />
+      </div>
     );
   }
 
+  const hasActiveRide =
+    activeRide &&
+    activeRide.status !== RideStatus.COMPLETED &&
+    activeRide.status !== RideStatus.CANCELLED;
+
   return (
-    <div className="space-y-6 p-4 md:p-6 max-w-4xl mx-auto">
+    <div className="animate-fade-up space-y-5 p-4 md:p-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-display font-bold text-white">Dashboard</h1>
+          <p className="text-sm text-surface-400">
             Welcome back, {profile?.full_name || user?.full_name || 'Driver'}
           </p>
         </div>
+        <div
+          className={clsx(
+            'flex items-center gap-3 px-5 py-2.5 rounded-full transition-all duration-300 cursor-pointer select-none',
+            isOnline
+              ? 'gradient-brand shadow-lg shadow-brand-500/30'
+              : 'bg-surface-800 hover:bg-surface-700',
+          )}
+          onClick={handleToggleOnline}
+        >
+          <span
+            className={clsx(
+              'w-3 h-3 rounded-full',
+              isOnline
+                ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse-slow'
+                : 'bg-surface-400',
+            )}
+          />
+          <span className={clsx('text-sm font-semibold', isOnline ? 'text-white' : 'text-surface-300')}>
+            {isOnline ? 'Online' : 'Offline'}
+          </span>
+        </div>
       </div>
 
-      <Card className="!p-6">
-        <div className="flex flex-col items-center text-center">
-          <div
-            className={clsx(
-              'w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-all duration-300',
-              isOnline ? 'bg-green-100' : 'bg-gray-100',
-            )}
-          >
-            <div
-              className={clsx(
-                'w-12 h-12 rounded-full transition-all duration-300',
-                isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400',
-              )}
-            />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">
-            {isOnline ? 'You are Online' : 'You are Offline'}
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            {isOnline
-              ? 'Waiting for ride requests...'
-              : 'Go online to start receiving ride requests'}
-          </p>
-          <Button
-            variant={isOnline ? 'secondary' : 'primary'}
-            size="lg"
-            onClick={handleToggleOnline}
-            loading={togglingOnline}
-          >
-            {isOnline ? 'Go Offline' : 'Go Online'}
-          </Button>
-        </div>
-      </Card>
-
-      {activeRide &&
-        activeRide.status !== RideStatus.COMPLETED &&
-        activeRide.status !== RideStatus.CANCELLED && (
-          <Card className="!p-6 border-l-4 border-l-primary-500">
+      {hasActiveRide ? (
+        <Card className="relative overflow-hidden !p-0">
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 gradient-brand" />
+          <div className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Active Ride</h3>
-              <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded-full capitalize">
+              <h3 className="font-display font-semibold text-white">Active Ride</h3>
+              <span className="badge badge-info capitalize text-xs">
                 {activeRide.status.replace(/_/g, ' ')}
               </span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-9 h-9 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Pickup</p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {activeRide.pickup_location.address}
-                  </p>
+                  <p className="text-xs text-surface-400">Pickup</p>
+                  <p className="text-sm font-medium text-white">{activeRide.pickup_location.address}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-9 h-9 bg-amber-500/20 rounded-full flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Dropoff</p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {activeRide.dropoff_location.address}
-                  </p>
+                  <p className="text-xs text-surface-400">Dropoff</p>
+                  <p className="text-sm font-medium text-white">{activeRide.dropoff_location.address}</p>
                 </div>
               </div>
             </div>
-            <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
-              <span className="text-gray-500">ETA: ~{activeRide.duration} min</span>
-              <span className="font-semibold text-gray-900">
-                ${activeRide.fare.toFixed(2)}
-              </span>
+            <div className="mt-4 pt-4 border-t border-surface-700 flex items-center justify-between text-sm">
+              <span className="text-surface-400">ETA: ~{activeRide.duration} min</span>
+              <span className="font-semibold text-white text-gradient">${activeRide.fare.toFixed(2)}</span>
             </div>
-          </Card>
-        )}
+          </div>
+        </Card>
+      ) : isOnline ? (
+        <Card className="!p-8 text-center">
+          <div className="flex flex-col items-center">
+            <div className="w-24 h-24 mb-5 text-brand-400 animate-float">
+              <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+                <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="2" strokeDasharray="8 4" opacity="0.3" />
+                <path d="M30 55 L45 35 L55 35 L70 55 L65 60 L55 50 L45 50 L35 60 Z" fill="currentColor" opacity="0.8" />
+                <circle cx="38" cy="62" r="5" fill="currentColor" opacity="0.6" />
+                <circle cx="62" cy="62" r="5" fill="currentColor" opacity="0.6" />
+              </svg>
+            </div>
+            <h2 className="font-display text-xl font-bold text-white mb-2">Waiting for ride requests...</h2>
+            <p className="text-surface-400 text-sm mb-1">Your car is ready. We'll notify you when a ride comes in.</p>
+            <span className="inline-flex items-center gap-2 mt-3 text-emerald-400 text-xs animate-pulse-slow">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+              Listening for requests
+            </span>
+          </div>
+        </Card>
+      ) : (
+        <Card className="!p-8 text-center">
+          <div className="flex flex-col items-center">
+            <div className="w-20 h-20 mb-5 text-surface-500">
+              <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+                <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="2" strokeDasharray="8 4" />
+                <path d="M35 40 L50 30 L65 40 L55 45 L50 40 L45 45 Z" fill="currentColor" opacity="0.5" />
+              </svg>
+            </div>
+            <h2 className="font-display text-xl font-bold text-white mb-2">You're Offline</h2>
+            <p className="text-surface-400 text-sm">Go online to start earning and receive ride requests.</p>
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="!p-4">
-          <p className="text-xs text-gray-500 mb-1">Today's Earnings</p>
-          <p className="text-xl font-bold text-gray-900">
-            ${stats.earningsToday.toFixed(2)}
+        <Card className="!p-4 text-center">
+          <p className="text-xs text-surface-400 mb-1 font-medium">Today's Earnings</p>
+          <p className="text-2xl font-display font-bold text-white">${stats.earningsToday.toFixed(2)}</p>
+        </Card>
+        <Card className="!p-4 text-center">
+          <p className="text-xs text-surface-400 mb-1 font-medium">Rides</p>
+          <p className="text-2xl font-display font-bold text-white">{stats.rideCount}</p>
+        </Card>
+        <Card className="!p-4 text-center">
+          <p className="text-xs text-surface-400 mb-1 font-medium">Rating</p>
+          <p className="text-2xl font-display font-bold text-white">
+            {stats.rating > 0 ? (
+              <span className="flex items-center justify-center gap-1">
+                {stats.rating.toFixed(1)}
+                <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </span>
+            ) : '—'}
           </p>
         </Card>
-        <Card className="!p-4">
-          <p className="text-xs text-gray-500 mb-1">Rides Completed</p>
-          <p className="text-xl font-bold text-gray-900">{stats.rideCount}</p>
-        </Card>
-        <Card className="!p-4">
-          <p className="text-xs text-gray-500 mb-1">Rating</p>
-          <p className="text-xl font-bold text-gray-900">
-            {stats.rating > 0 ? stats.rating.toFixed(1) : '—'}
-          </p>
-        </Card>
-        <Card className="!p-4">
-          <p className="text-xs text-gray-500 mb-1">Online Time</p>
-          <p className="text-xl font-bold text-gray-900">{stats.onlineTime}</p>
+        <Card className="!p-4 text-center">
+          <p className="text-xs text-surface-400 mb-1 font-medium">Online Time</p>
+          <p className="text-2xl font-display font-bold text-white">{stats.onlineTime}</p>
         </Card>
       </div>
 
@@ -218,11 +250,17 @@ export default function DriverDashboardPage() {
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         title="Location Required"
+        size="sm"
       >
         <div className="text-center">
-          <p className="text-sm text-gray-600 mb-6">
-            You need to allow location access to go online. Your location helps us
-            find nearby ride requests.
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-500/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-sm text-surface-400 mb-6">
+            You need to allow location access to go online. Your location helps us find nearby ride requests.
           </p>
           <div className="flex gap-3 justify-center">
             <Button variant="secondary" onClick={() => setShowLocationModal(false)}>

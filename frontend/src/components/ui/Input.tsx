@@ -7,6 +7,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   helperText?: string;
   icon?: ReactNode;
   fullWidth?: boolean;
+  prefix?: string;
 }
 
 export function Input({
@@ -17,6 +18,7 @@ export function Input({
   fullWidth = false,
   className,
   id,
+  prefix,
   ...props
 }: InputProps) {
   const inputId = id || label.toLowerCase().replace(/\s+/g, '-');
@@ -25,18 +27,24 @@ export function Input({
     <div className={clsx('relative', fullWidth && 'w-full')}>
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 z-10 pointer-events-none">
             {icon}
+          </div>
+        )}
+        {prefix && (
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-500 font-medium z-10 pointer-events-none">
+            {prefix}
           </div>
         )}
         <input
           {...props}
           id={inputId}
           className={clsx(
-            'input-field peer',
-            icon && 'pl-10',
-            error && 'border-red-500 focus:ring-red-500',
-            props.disabled && 'bg-gray-100 text-gray-500 cursor-not-allowed',
+            'input-field',
+            icon && 'pl-12',
+            prefix && 'pl-10',
+            error && 'input-error',
+            props.disabled && 'bg-surface-50 text-surface-400 cursor-not-allowed',
             className
           )}
           placeholder=" "
@@ -44,10 +52,11 @@ export function Input({
         <label
           htmlFor={inputId}
           className={clsx(
-            'absolute left-4 top-2 text-xs transition-all duration-200 pointer-events-none',
-            'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400',
-            'peer-focus:top-2 peer-focus:text-xs peer-focus:text-primary-600',
-            icon && 'peer-placeholder-shown:left-10 peer-focus:left-10 left-10',
+            'absolute left-4 top-2 text-[11px] font-medium transition-all duration-200 pointer-events-none text-surface-500',
+            'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-surface-400',
+            'peer-focus:top-2 peer-focus:text-[11px] peer-focus:text-brand-600',
+            icon && 'peer-placeholder-shown:left-12 peer-focus:left-12 left-12',
+            prefix && 'peer-placeholder-shown:left-10 peer-focus:left-10 left-10',
             error && 'peer-focus:text-red-500'
           )}
         >
@@ -55,10 +64,15 @@ export function Input({
         </label>
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
+        <p className="mt-1.5 text-xs font-medium text-red-500 flex items-center gap-1">
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          {error}
+        </p>
       )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-1.5 text-xs text-surface-400">{helperText}</p>
       )}
     </div>
   );

@@ -11,6 +11,61 @@ import { get, getErrorMessage } from '../../services/api';
 
 const PAGE_LIMIT = 10;
 
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function formatDateGroup(dateStr: string): string {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function groupRidesByDate(rides: Ride[]): Map<string, Ride[]> {
+  const groups = new Map<string, Ride[]>();
+  for (const ride of rides) {
+    const key = formatDateGroup(ride.created_at);
+    const existing = groups.get(key) || [];
+    existing.push(ride);
+    groups.set(key, existing);
+  }
+  return groups;
+}
+
+function SkeletonCard() {
+  return (
+    <div className="glass rounded-3xl p-5 space-y-3 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="skeleton h-6 w-20 rounded-full" />
+        <div className="skeleton h-6 w-16 rounded-lg" />
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-start gap-2">
+          <div className="skeleton w-2 h-2 rounded-full mt-2 shrink-0" />
+          <div className="skeleton h-4 w-3/4 rounded-lg" />
+        </div>
+        <div className="flex items-start gap-2">
+          <div className="skeleton w-2 h-2 rounded-full mt-2 shrink-0" />
+          <div className="skeleton h-4 w-2/3 rounded-lg" />
+        </div>
+      </div>
+      <div className="skeleton h-4 w-1/3 rounded-lg" />
+    </div>
+  );
+}
+
 export function RideHistoryPage() {
   const { rideHistory, fetchHistory, isLoading } = useRide();
   const navigate = useNavigate();
@@ -74,21 +129,20 @@ export function RideHistoryPage() {
     }
   };
 
-  const formatDate = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   if (initialLoad && isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Spinner size="lg" />
+      <div className="space-y-6 animate-fade-up">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-display font-bold text-surface-900">Your Rides</h1>
+            <p className="text-sm text-surface-500 mt-1">View your past trips</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
       </div>
     );
   }
@@ -97,17 +151,19 @@ export function RideHistoryPage() {
     return <ErrorState message={error} onRetry={handleRefresh} />;
   }
 
+  const rideGroups = groupRidesByDate(allRides);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Ride History</h1>
-          <p className="text-sm text-gray-500 mt-1">View your past trips</p>
+          <h1 className="text-2xl font-display font-bold text-surface-900">Your Rides</h1>
+          <p className="text-sm text-surface-500 mt-1">View your past trips</p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
+          className="p-2.5 text-surface-400 hover:text-brand-600 transition-colors rounded-xl hover:bg-brand-50"
           aria-label="Refresh"
         >
           <svg
@@ -127,20 +183,40 @@ export function RideHistoryPage() {
       </div>
 
       {error && allRides.length > 0 && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center justify-between">
-          <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700 underline text-xs">
+        <div className="p-4 glass-strong rounded-2xl border border-red-200/50 bg-red-50/80 text-sm flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-red-700">{error}</span>
+          </div>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700 underline text-xs font-medium">
             Dismiss
           </button>
         </div>
       )}
 
       {allRides.length > 0 ? (
-        <div className="space-y-4">
-          {allRides.map((ride) => (
-            <div key={ride.id} className="space-y-1">
-              <p className="text-xs text-gray-400 px-1">{formatDate(ride.created_at)}</p>
-              <RideStatusCard ride={ride} />
+        <div className="space-y-6">
+          {Array.from(rideGroups.entries()).map(([dateLabel, rides]) => (
+            <div key={dateLabel} className="space-y-2">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xs font-bold text-surface-400 uppercase tracking-wider font-display">
+                  {dateLabel}
+                </h3>
+                <div className="flex-1 h-px bg-surface-200" />
+              </div>
+              <div className="space-y-3">
+                {rides.map((ride, index) => (
+                  <div
+                    key={ride.id}
+                    className="animate-fade-up"
+                    style={{ animationDelay: `${index * 80}ms` }}
+                  >
+                    <RideStatusCard ride={ride} />
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
 
@@ -158,26 +234,30 @@ export function RideHistoryPage() {
           )}
 
           {!hasMore && allRides.length > 0 && (
-            <p className="text-center text-sm text-gray-400 py-4">
+            <p className="text-center text-sm text-surface-400 py-4">
               You've reached the end of your ride history
             </p>
           )}
         </div>
       ) : (
         !initialLoad && !isLoading && (
-          <EmptyState
-            icon={
-              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
-            title="No rides yet"
-            description="You haven't taken any rides yet. Book your first ride to get started."
-            action={{
-              label: 'Book Your First Ride',
-              onClick: () => navigate('/rider/book'),
-            }}
-          />
+          <div className="animate-scale-in">
+            <EmptyState
+              icon={
+                <div className="w-20 h-20 rounded-full gradient-success flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              }
+              title="No rides yet"
+              description="You haven't taken any rides yet. Book your first ride to get started."
+              action={{
+                label: 'Book Your First Ride',
+                onClick: () => navigate('/rider/book'),
+              }}
+            />
+          </div>
         )
       )}
     </div>

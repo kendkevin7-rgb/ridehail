@@ -7,61 +7,82 @@ interface NavItem {
   to: string;
   label: string;
   icon: React.ReactNode;
+  activeIcon: React.ReactNode;
 }
 
-function HomeIcon() {
+function HomeIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      {!active && <polyline points="9 22 9 12 15 12 15 22" />}
+      {active && <path d="M9 22V12h6v10" />}
     </svg>
   );
 }
 
-function BookIcon() {
+function BookIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="10" r="3" />
+      <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8z" />
     </svg>
   );
 }
 
-function HistoryIcon() {
+function HistoryIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      {!active && <polyline points="12 6 12 12 16 14" />}
+      {active && <path d="M12 6v6l4 2" />}
     </svg>
   );
 }
 
-function ProfileIcon() {
+function ProfileIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
 
-function DashboardIcon() {
+function DashboardIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
     </svg>
   );
 }
 
-function RequestsIcon() {
+function RequestsIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      {!active && <>
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </>}
+      {active && <>
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+      </>}
     </svg>
   );
 }
 
-function EarningsIcon() {
+function EarningsIcon({ active }: { active?: boolean }) {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   );
 }
@@ -73,25 +94,32 @@ export function BottomNav() {
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     clsx(
-      'flex flex-col items-center gap-1 text-xs font-medium transition-colors duration-200',
-      isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-700'
+      'relative flex flex-col items-center gap-1 pt-2 pb-1 text-[10px] font-semibold transition-colors duration-200',
+      isActive ? 'text-brand-600' : 'text-surface-400 hover:text-surface-600'
     );
 
   if (user.role === UserRole.RIDER) {
     const riderNavItems: NavItem[] = [
-      { to: '/rider', label: 'Home', icon: <HomeIcon /> },
-      { to: '/rider/book', label: 'Book Ride', icon: <BookIcon /> },
-      { to: '/rider/history', label: 'History', icon: <HistoryIcon /> },
-      { to: '/rider/profile', label: 'Profile', icon: <ProfileIcon /> },
+      { to: '/rider', label: 'Home', icon: <HomeIcon />, activeIcon: <HomeIcon active /> },
+      { to: '/rider/book', label: 'Book', icon: <BookIcon />, activeIcon: <BookIcon active /> },
+      { to: '/rider/history', label: 'History', icon: <HistoryIcon />, activeIcon: <HistoryIcon active /> },
+      { to: '/rider/profile', label: 'Profile', icon: <ProfileIcon />, activeIcon: <ProfileIcon active /> },
     ];
 
     return (
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
-        <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-white/20 z-40 safe-bottom shadow-glass">
+        <div className="flex justify-around items-end h-16 max-w-lg mx-auto px-2">
           {riderNavItems.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === '/rider'} className={navLinkClass}>
-              {item.icon}
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  {isActive && <span className="absolute top-0 w-6 h-1 rounded-full gradient-brand" />}
+                  <span className={isActive ? 'drop-shadow-sm' : ''}>
+                    {isActive ? item.activeIcon : item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>
@@ -100,19 +128,26 @@ export function BottomNav() {
   }
 
   const driverNavItems: NavItem[] = [
-    { to: '/driver', label: 'Dashboard', icon: <DashboardIcon /> },
-    { to: '/driver/requests', label: 'Requests', icon: <RequestsIcon /> },
-    { to: '/driver/earnings', label: 'Earnings', icon: <EarningsIcon /> },
-    { to: '/driver/profile', label: 'Profile', icon: <ProfileIcon /> },
+    { to: '/driver', label: 'Home', icon: <DashboardIcon />, activeIcon: <DashboardIcon active /> },
+    { to: '/driver/requests', label: 'Requests', icon: <RequestsIcon />, activeIcon: <RequestsIcon active /> },
+    { to: '/driver/earnings', label: 'Earnings', icon: <EarningsIcon />, activeIcon: <EarningsIcon active /> },
+    { to: '/driver/profile', label: 'Profile', icon: <ProfileIcon />, activeIcon: <ProfileIcon active /> },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
-      <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-white/20 z-40 safe-bottom shadow-glass">
+      <div className="flex justify-around items-end h-16 max-w-lg mx-auto px-2">
         {driverNavItems.map((item) => (
           <NavLink key={item.to} to={item.to} end={item.to === '/driver'} className={navLinkClass}>
-            {item.icon}
-            <span>{item.label}</span>
+            {({ isActive }) => (
+              <>
+                {isActive && <span className="absolute top-0 w-6 h-1 rounded-full gradient-brand" />}
+                <span className={isActive ? 'drop-shadow-sm' : ''}>
+                  {isActive ? item.activeIcon : item.icon}
+                </span>
+                <span>{item.label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </div>

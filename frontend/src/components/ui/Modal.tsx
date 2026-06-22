@@ -75,9 +75,11 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 animate-fade-in"
+    >
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -87,20 +89,22 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         className={clsx(
-          'relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full',
-          'transform transition-all animate-slide-up sm:animate-none',
+          'relative glass-strong w-full',
+          'rounded-t-3xl sm:rounded-3xl',
+          'animate-slide-up sm:animate-scale-in',
           sizeClasses[size],
-          'max-h-[90vh] overflow-y-auto'
+          'max-h-[90vh] overflow-y-auto',
+          'shadow-elevated'
         )}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
+            <h2 id="modal-title" className="text-lg font-display font-bold text-surface-900">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
+              className="p-1.5 text-surface-400 hover:text-surface-600 transition-colors rounded-full hover:bg-surface-100"
               aria-label="Close modal"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
